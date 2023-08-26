@@ -15,6 +15,8 @@ session_start();
  */
 include_once '../model/header.php';
 include_once '../view/nav.php';
+require_once '../model/database.php';
+require_once '../model/user.php';
 /*
  * Cheaking if api key exists
  */
@@ -85,7 +87,8 @@ switch ($action) {
         $reply = curl_exec($ch);
         curl_close($ch);
 
-        if ($reply == "TRUE") {
+        if ($reply == true) {
+            Signup($username, $password, $member);
             header("Location: ?action=show_login");
             echo "Registered"; // You might want to use swal or similar for alerts
         } else {
@@ -102,8 +105,7 @@ switch ($action) {
         break;
 
     case 'login':
-        require_once '../model/database.php';
-        require_once '../model/user.php';
+
         $username = filter_input(INPUT_POST, 'username');
         $password = filter_input(INPUT_POST, 'password');
         if (check_user($username, $password)) {
@@ -189,23 +191,23 @@ switch ($action) {
         $cocktailData = json_decode($response, true);
 
         include '../view/cocktailbyName.php';
-        
+
         break;
 
     case 'fetch_cocktail_by_category_and_ingredient':
         $basicUrl = "http://localhost/Repeat/JWTServer/controller/index.php";
-    // Get user input for category and ingredient
-    $category = filter_input(INPUT_POST, 'category', FILTER_SANITIZE_STRING);
-    $ingredient = filter_input(INPUT_POST, 'ingredient', FILTER_SANITIZE_STRING);
-    
-    // Set default values if inputs are empty
-    if (empty($category)) {
-        $category = "Ordinary Drink"; // Default category
-    }
-    if (empty($ingredient)) {
-        $ingredient = "Vodka"; // Default ingredient
-    }
-    
+        // Get user input for category and ingredient
+        $category = filter_input(INPUT_POST, 'category', FILTER_SANITIZE_STRING);
+        $ingredient = filter_input(INPUT_POST, 'ingredient', FILTER_SANITIZE_STRING);
+
+        // Set default values if inputs are empty
+        if (empty($category)) {
+            $category = "Ordinary Drink"; // Default category
+        }
+        if (empty($ingredient)) {
+            $ingredient = "Vodka"; // Default ingredient
+        }
+
         $Service = "?Service=Get_cocktail_by_category_and_ingredient&category=" . urlencode($category) . "&ingredient=" . urlencode($ingredient);
 
         // Fetch cocktail data using cURL
