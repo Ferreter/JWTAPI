@@ -14,7 +14,7 @@
 
         <form class="row g-3" method="POST" action="">
             <div class="col-md-6">
-                <label for="category">Select Ingrediant:</label>
+                <label for="category">Select Ingredient:</label>
                 <select class="form-control" name="cocktailIngredient">
                     <option value="">Select an Ingredient</option>
                     <?php
@@ -54,6 +54,7 @@
                 </select>
                 <label for="category">Select Category:</label>
                 <select class="form-control" name="category" id="category">
+                    <option value="">Select an Ingredient</option>
                     <?php foreach ($categories as $category): ?>
                         <option value="<?php echo $category; ?>"><?php echo $category; ?></option>
                     <?php endforeach; ?>

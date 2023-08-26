@@ -30,14 +30,4 @@
     <p>Choose the membership that best suits your needs and start your cocktail journey today!</p>
 
 
-    <div class="container mt-5">
-        <form class="row g-3" method="POST" action="?action=fetch_cocktail_by_name">
-            <div class="col-md-6">
-                <input type="text" class="form-control" name="cocktailName" placeholder="Enter Cocktail Name">
-            </div>
-            <div class="col-md-6">
-                <button type="submit" class="btn btn-primary" name="fetch_cocktail_by_name">Search</button>
-            </div>
-        </form>
-    </div>
 </main>

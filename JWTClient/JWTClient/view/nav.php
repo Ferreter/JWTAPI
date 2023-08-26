@@ -6,7 +6,7 @@
 ?>
 <!-- Navbar -->
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a class="navbar-brand" href="#">CocktailAPI</a>
+    <a class="navbar-brand" href="?action=home">CocktailAPI</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
@@ -16,10 +16,10 @@
                 <a class="nav-link" href="?action=fetch_random_cocktail">Random Cocktail</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link font-weight-bold" href="#">Cocktail by Name</a>
+                <a class="nav-link font-weight-bold" href="?action=fetch_cocktail_by_name">Cocktail by Name</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link font-weight-bold" href="#">Cocktail by Ingredient </a>
+                <a class="nav-link font-weight-bold" href="?action=fetch_cocktail_by_category_and_ingredient">Cocktail by Ingredient </a>
             </li>
 
 
