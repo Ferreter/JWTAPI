@@ -24,7 +24,6 @@ if (isset($_SESSION['api_key'])) {
 } else {
     $api_key = null;
 }
-
 /*
  * Make user login 
  */
