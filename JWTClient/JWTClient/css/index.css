@@ -1,0 +1,25 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/Other/CascadeStyleSheet.css to edit this template
+*/
+/* 
+    Created on : 16-Aug-2023, 6:28:54 pm
+    Author     : hkhat
+*/
+
+        body {
+           
+            color: #333; /* Set your text color */
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh; /* Make sure the page takes at least the full viewport height */
+        }
+        main {
+            flex: 1; /* Fill the remaining vertical space */
+            padding: 50px;
+        }
+        footer {
+            background-color: #343a40; /* Set footer background color */
+            color: #fff; /* Set footer text color */
+            padding: 20px 0;
+        }
