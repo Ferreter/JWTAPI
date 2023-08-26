@@ -190,7 +190,7 @@ switch ($action) {
         $cocktailData = json_decode($response, true);
 
         include '../view/cocktailbyName.php';
-        //test
+        
         break;
 
     case 'fetch_cocktail_by_category_and_ingredient':
