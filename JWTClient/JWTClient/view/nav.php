@@ -16,10 +16,18 @@
                 <a class="nav-link" href="?action=fetch_random_cocktail">Random Cocktail</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link font-weight-bold" href="?action=fetch_cocktail_by_name">Cocktail by Name</a>
+                <?php if ($_SESSION['member'] == 0) : ?>
+                    <a class="nav-link font-weight-bold disabled" href="#" tabindex="-1" aria-disabled="true">Cocktail by Name</a>
+                <?php else : ?>
+                    <a class="nav-link font-weight-bold" href="?action=fetch_cocktail_by_name">Cocktail by Name</a>
+                <?php endif; ?>
             </li>
             <li class="nav-item">
-                <a class="nav-link font-weight-bold" href="?action=fetch_cocktail_by_category_and_ingredient">Cocktail by Ingredient </a>
+                <?php if ($_SESSION['member'] == 0) : ?>
+                    <a class="nav-link font-weight-bold disabled" href="#" tabindex="-1" aria-disabled="true">Cocktail by Ingredient</a>
+                <?php else : ?>
+                    <a class="nav-link font-weight-bold" href="?action=fetch_cocktail_by_category_and_ingredient">Cocktail by Ingredient</a>
+                <?php endif; ?>
             </li>
 
 

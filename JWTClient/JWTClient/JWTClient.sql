@@ -35,29 +35,24 @@ DROP TABLE IF EXISTS user;
 --
 
 CREATE TABLE `user` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `username` varchar(50) NOT NULL,
   `password` varchar(50) NOT NULL,
-  `memberType` int(10) NOT NULL,
-  `APIKey` varchar(999) NOT NULL
+  `memberType` varchar(50) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `username_UNIQUE` (`username`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
 --
 -- Dumping data for table `user`
 --
 
-INSERT INTO `user` (`username`, `password`, `memberType`, `APIKey`) VALUES
-('harsh', '12345678', 1, 'sahdhfsab232412');
+INSERT INTO `user` (`username`, `password`, `memberType`) VALUES
+('harsh', '12345678', 1);
 
 --
 -- Indexes for dumped tables
 --
 
---
--- Indexes for table `user`
---
-ALTER TABLE `user`
-  ADD PRIMARY KEY (`username`);
-COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

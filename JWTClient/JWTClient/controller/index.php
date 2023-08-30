@@ -20,9 +20,8 @@ require_once '../model/user.php';
 /*
  * Cheaking if api key exists
  */
-
-if (isset($_SESSION['api_key'])) {
-    $api_key = $_SESSION['api_key'];
+if (isset($_SESSION['apikey'])) {
+    
 } else {
     $api_key = null;
 }
@@ -44,6 +43,18 @@ if (isset($_SESSION["login"])) {
         exit; // Stop further execution of the script
     }
 }
+
+//deny 
+if (isset($_SESSION["member"])) {
+    if ($_SESSION["member"] == 0) {
+        if ($action == 'fetch_cocktail_by_name' || $action == 'fetch_cocktail_by_category_and_ingredient') {
+            // Redirect the user to a different page or display an error message
+            header("location: ?action=home"); 
+            exit; 
+        }
+    }
+}
+
 switch ($action) {
     /*
      * Decided no need for home and can just put it in request_token and user can see all the text and everything else in there too
@@ -89,6 +100,7 @@ switch ($action) {
 
         if ($reply == true) {
             Signup($username, $password, $member);
+
             header("Location: ?action=show_login");
             echo "Registered"; // You might want to use swal or similar for alerts
         } else {
@@ -123,12 +135,9 @@ switch ($action) {
         break;
 
     case 'request_token':
-        //echo "attempting to request";
-        $member1 = filter_input(INPUT_POST, 'Member');
         $basicUrl = "http://localhost/Repeat/JWTServer/controller/index.php";
 
-        //$pageName = "Home";
-        $Service = "?Service=Request_key";
+        $Service = "?Service=Request_key&username=" . urlencode($_SESSION["username"]);
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $basicUrl . $Service);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
@@ -136,15 +145,19 @@ switch ($action) {
         curl_setopt($ch, CURLOPT_HTTPHEADER, array("Accept: application/json"));
         $reply = curl_exec($ch);
         curl_close($ch);
+
+        // Store the received API key in session
         $_SESSION["apikey"] = $reply;
         include "../view/home.php";
-        echo "<p class = container>You'r API key : ", $_SESSION["apikey"], "<p>";
+        echo "<p class = container>Your API key: ", $_SESSION["apikey"], "</p>";
         break;
 
     case 'fetch_random_cocktail':
         $basicUrl = "http://localhost/Repeat/JWTServer/controller/index.php";
-        $Service = "?Service=Get_random";
-        // Fetch random cocktail data using the token
+        echo $_SESSION["apikey"];
+        // Append the API key to the service URL
+        $Service = "?Service=Get_random&apikey=" . urlencode($_SESSION["apikey"]);
+
         // Set up cURL to call the server
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $basicUrl . $Service);
@@ -156,21 +169,17 @@ switch ($action) {
 
         // Decode JSON response
         $cocktailData = json_decode($response, true);
-
         include '../view/randomCocktail.php';
-
         break;
 
     case 'search_by_name':
-
         include '../view/cocktailbyName.php';
-
         break;
 
     case 'fetch_cocktail_by_name':
         $basicUrl = "http://localhost/Repeat/JWTServer/controller/index.php";
         //$cocktailName = "Margarita"; // Replace with the desired cocktail name
-        $cocktailName = filter_input(INPUT_POST, 'cocktailName', FILTER_SANITIZE_STRING);
+        $cocktailName = filter_input(INPUT_POST, 'cocktailName', FILTER_SANITIZE_SPECIAL_CHARS);
 
         // If the cocktail name is empty, set a default value
         if (empty($cocktailName)) {
@@ -197,8 +206,8 @@ switch ($action) {
     case 'fetch_cocktail_by_category_and_ingredient':
         $basicUrl = "http://localhost/Repeat/JWTServer/controller/index.php";
         // Get user input for category and ingredient
-        $category = filter_input(INPUT_POST, 'category', FILTER_SANITIZE_STRING);
-        $ingredient = filter_input(INPUT_POST, 'ingredient', FILTER_SANITIZE_STRING);
+        $category = filter_input(INPUT_POST, 'category', FILTER_SANITIZE_SPECIAL_CHARS);
+        $ingredient = filter_input(INPUT_POST, 'ingredient', FILTER_SANITIZE_SPECIAL_CHARS);
 
         // Set default values if inputs are empty
         if (empty($category)) {

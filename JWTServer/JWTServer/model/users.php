@@ -29,21 +29,37 @@ function check_user($username, $password) {
 function Signup($username, $password, $member) {
     global $dbs;
     try {
-        $query = "INSERT INTO user (username, password, memberType, requestNum) VALUES (:username, :password, :memberType, :requestNum)";
+        // Generate API Key using JWT
+        require_once 'JWT_class.php';
+        $token = array();
+        $token['id'] = uniqid(); // Generating a unique ID for API Key
+        $apiKey = JWT::encode($token, 'secret_server_key');
+
+        // Calculate Premium date based on member type
+        $premiumDate = ($member == 1) ? date('Y-m-d', strtotime('+30 days')) : date('Y-m-d');
+
+        $query = "INSERT INTO user (username, password, memberType, APIKey) VALUES (:username, :password, :memberType, :APIKey)";
         $statement = $dbs->prepare($query);
         $statement->bindValue(":username", $username);
         $statement->bindValue(":password", $password);
         $statement->bindValue(":memberType", $member);
-        $statement->bindValue(":requestNum", 0);
+        $statement->bindValue(":APIKey", $apiKey); // Insert API Key value
         $statement->execute();
-        $rowCount = $statement->rowCount();
+
+        // Insert usage data into usage table
+        $usageQuery = "INSERT INTO usageUser (APIKey, todaysUsage, UsageDate, PremiumDate) VALUES (:APIKey, 0, CURDATE(), :premiumDate)";
+        $usageStatement = $dbs->prepare($usageQuery);
+        $usageStatement->bindValue(":APIKey", $apiKey);
+        $usageStatement->bindValue(":premiumDate", $premiumDate);
+        $usageStatement->execute();
+
+        $rowCount = $usageStatement->rowCount();
         if ($rowCount < 0) {
             return true;
         } else {
             return false;
         }
     } catch (PDOException $ex) {
-        // Handle the error gracefully, log, or display an appropriate message
         header("Location:../view/error.php?msg=" . $ex->getMessage());
     }
 }
