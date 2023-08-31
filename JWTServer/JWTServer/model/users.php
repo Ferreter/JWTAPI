@@ -237,26 +237,40 @@ function getCocktailByCategoryAndIngredient($category, $ingredient) {
     return $cocktails;
 }
 
-// Example usage
-//$category = "Ordinary Drink";
-//$ingredient = "Vodka";
-//
-//$matchingCocktails = getCocktailByCategoryAndIngredient($category, $ingredient);
-//
-//if (!empty($matchingCocktails)) {
-//    foreach ($matchingCocktails as $cocktail) {
-//        // ... Display other cocktail details ...
-//        echo "</div>";
-//        echo "Cocktail Name: " . $cocktail['name'] . "<br>";
-//        echo "Category: " . $cocktail['category'] . "<br>";
-//        echo "Instructions: " . $cocktail['instructions'] . "<br>";
-//        echo "Glass: " . $cocktail['glass'] . "<br>";
-//        echo "Ingredients: <br>";
-//        foreach ($cocktail['ingredients'] as $ingredient) {
-//            echo "- " . $ingredient['measure'] . " " . $ingredient['ingredient'] . "<br>";
-//        }
-//        echo "<hr>";
-//    }
-//} else {
-//    echo "No cocktails found with the specified category and ingredient.";
-//}
+function retrievePremiumDate($apiKey) {
+    global $dbs;
+
+    try {
+        $query = "SELECT PremiumDate FROM usageUser WHERE APIKey = :apiKey";
+        $statement = $dbs->prepare($query);
+        $statement->bindValue(":apiKey", $apiKey);
+        $statement->execute();
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+
+        if ($result) {
+            return $result['PremiumDate'];
+        } else {
+            return null; // API key not found or error occurred
+        }
+    } catch (PDOException $ex) {
+        // Handle the error gracefully, log, or display an appropriate message
+        header("Location:../view/error.php?msg=" . $ex->getMessage());
+    }
+}
+
+function upgradeToPremium($username) {
+    global $dbs; 
+
+    try {
+        $query = "UPDATE user SET memberType = 1 WHERE username = :username";
+        $statement = $dbs->prepare($query);
+        $statement->bindValue(":username", $username);
+        $statement->execute();
+        $rowCount = $statement->rowCount();
+
+        return $rowCount > 0; // Return true if the update was successful
+    } catch (PDOException $ex) {
+        // Handle the error gracefully, log, or display an appropriate message
+        header("Location:../view/error.php?msg=" . $ex->getMessage());
+    }
+}

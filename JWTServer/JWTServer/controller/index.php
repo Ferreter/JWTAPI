@@ -9,7 +9,7 @@ $apikey = filter_input(INPUT_GET, 'api_key');
 $Service = filter_input(INPUT_GET, 'Service');
 
 if ($apikey == Null) {
-    if ($Service != "Request_key" && $Service != "register" && $Service != "Get_random" && $Service != "Get_cocktail_by_name" && $Service != "Get_cocktail_by_category_and_ingredient") {
+    if ($Service != "Request_key" && $Service != "Upgrade_to_premium" && $Service != "Retrieve_premium_date" && $Service != "register" && $Service != "Get_random" && $Service != "Get_cocktail_by_name" && $Service != "Get_cocktail_by_category_and_ingredient") {
         // || $Service != "Register" || $Service != "Service1" || $Service != "Service2"
         $response = "OOps";
         echo json_encode($response) . "c";
@@ -40,6 +40,32 @@ switch ($Service) {
         }
         break;
 
+    case 'Retrieve_premium_date':
+        // Retrieve the API key from the query parameter
+        $apiKey = filter_input(INPUT_GET, 'apikey', FILTER_SANITIZE_SPECIAL_CHARS);
+
+        // Call the function to retrieve premium date
+        $premiumDate = retrievePremiumDate($apiKey);
+
+        // Send the premium date as JSON response
+        echo json_encode($premiumDate);
+        break;
+
+    case 'Upgrade_to_premium':
+        echo 'Lets see';
+        $apikey = filter_input(INPUT_GET, 'apikey', FILTER_SANITIZE_SPECIAL_CHARS);
+        $username = filter_input(INPUT_GET, 'username', FILTER_SANITIZE_SPECIAL_CHARS);
+
+        // Verify API key and other security checks if needed
+        // Call the upgradeToPremium function
+        $success = upgradeToPremium($username);
+
+        // Create a response array
+        $response = array('success' => $success);
+
+        // Send the response as JSON
+        echo json_encode($response);
+        break; //yug is 1.32 //vvn is 16.12 //harsh is 35.06 +61.9
 //    case 'Get_random':
 //        
 //        // Call the function to get cocktail data
@@ -62,7 +88,6 @@ switch ($Service) {
         $todaysUsageResult = $todaysUsageStatement->fetchColumn();
         $todaysUsage = $todaysUsageResult;
 
-
 // Retrieve UsageDate from the database based on APIKey
         $usageDateQuery = "SELECT UsageDate FROM usageUser WHERE APIKey = :apiKey";
         $usageDateStatement = $dbs->prepare($usageDateQuery);
@@ -70,24 +95,20 @@ switch ($Service) {
         $usageDateStatement->execute();
         $usageDateResult = $usageDateStatement->fetchColumn();
         $usageDate = $usageDateResult;
-
+        // Get today's date
+        $currentDate = date('Y-m-d');
         // Check if usage is less than 10
-        if ($todaysUsage < 2) { //for some reason it is updating twice instead of once so instead of spending hours fixing it i changed it to 20
-            // Get today's date
-            $currentDate = date('Y-m-d');
-
+        if ($usageDate != $currentDate) {
+            $todaysUsage = 0;
+            $usageDate = $currentDate;
+        }
+        if ($todaysUsage < 20) { //for some reason it is updating twice instead of once so instead of spending hours fixing it i changed it to 20
             // Check if usageDate is today
             if ($usageDate == $currentDate) {
                 // Increase today's usage by 1
                 $todaysUsage += 1;
-            } else {
-                // Reset today's usage to 1 and set usageDate to today
-                $todaysUsage = 1;
-                $usageDate = $currentDate;
             }
 
-            // Increment total usage
-            // Assuming you have a way to track and update the total usage in the database as well
             // Update todaysUsage and usageDate in the database
             $updateQuery = "UPDATE usageUser SET todaysUsage = :todaysUsage, UsageDate = :usageDate WHERE APIKey = :apiKey";
             $updateStatement = $dbs->prepare($updateQuery);
@@ -101,7 +122,7 @@ switch ($Service) {
             echo json_encode($cocktailData);
         } else {
             // If usage is more than 10, return an error message
-            //echo json_encode(array('error' => 'Maximum usage limit reached.'));
+            //error handling is done in the client side so nothing to worry
         }
         break;
 

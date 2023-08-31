@@ -49,8 +49,8 @@ if (isset($_SESSION["member"])) {
     if ($_SESSION["member"] == 0) {
         if ($action == 'fetch_cocktail_by_name' || $action == 'fetch_cocktail_by_category_and_ingredient') {
             // Redirect the user to a different page or display an error message
-            header("location: ?action=home"); 
-            exit; 
+            header("location: ?action=home");
+            exit;
         }
     }
 }
@@ -61,6 +61,30 @@ switch ($action) {
      */
     case 'home':
         header("location: ?action=request_token");
+        break;
+    case 'updateProfile':
+        include "../view/updateMember.php";
+        break;
+    case 'upgradeProfile':
+        upgradeToPremium($_SESSION["username"]);
+
+        $username = $_SESSION["username"];
+        $api = trim($_SESSION["apikey"]);
+
+        $basicUrl = "http://localhost/Repeat/JWTServer/controller/index.php";
+        $Service = "?Service=Upgrade_to_premium&apikey=$api" . "&username=" . urlencode($username);
+
+        
+// Set up cURL to call the server
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $basicUrl . $Service);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+        curl_setopt($ch, CURLOPT_HEADER, FALSE);
+        $response = curl_exec($ch);
+        curl_close($ch);
+
+
+        header("location: ?action=logout"); //logout caus session variables can be reseted 
         break;
     case'show_register':
         include "../view/register.php";
@@ -115,7 +139,6 @@ switch ($action) {
 //        echo "Member: " . $member . "<br>";
 
         break;
-
     case 'login':
 
         $username = filter_input(INPUT_POST, 'username');
@@ -131,13 +154,12 @@ switch ($action) {
             echo "wrong username or password please retry";
             include "../view/login.php";
         }
-
         break;
-
     case 'request_token':
         $basicUrl = "http://localhost/Repeat/JWTServer/controller/index.php";
 
         $Service = "?Service=Request_key&username=" . urlencode($_SESSION["username"]);
+        echo $Service;
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $basicUrl . $Service);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
@@ -149,15 +171,36 @@ switch ($action) {
         // Store the received API key in session
         $_SESSION["apikey"] = $reply;
         include "../view/home.php";
-        echo "<p class = container>Your API key: ", $_SESSION["apikey"], "</p>";
+        echo "<p class = container>Your API key:", $_SESSION["apikey"], "</p>";
+        $api = trim($_SESSION["apikey"]); //for some reason there was a space so i removed it  using trm only took me 1 hour to figure it out :)
+
+        $basicUrl = "http://localhost/Repeat/JWTServer/controller/index.php";
+        $service = "?Service=Retrieve_premium_date&apikey=$api";
+        $ch1 = curl_init();
+        curl_setopt($ch1, CURLOPT_URL, $basicUrl . $service);
+        curl_setopt($ch1, CURLOPT_RETURNTRANSFER, TRUE);
+        curl_setopt($ch1, CURLOPT_HEADER, FALSE);
+        curl_setopt($ch1, CURLOPT_HTTPHEADER, array("Accept: application/json"));
+        $response = curl_exec($ch1);
+        curl_close($ch1);
+        $premiumDate = json_decode($response, true);
+
+        // Store premium date in session
+        if ($premiumDate !== null) {
+
+            $_SESSION["premiumDate"] = $premiumDate;
+            echo 'Premium date is : ' . $_SESSION["premiumDate"];
+        } else {
+            echo '<br>Unable to retrieve premium date';
+        }
+
         break;
 
     case 'fetch_random_cocktail':
         $basicUrl = "http://localhost/Repeat/JWTServer/controller/index.php";
-        echo $_SESSION["apikey"];
+        $api = trim($_SESSION["apikey"]); //for some reason there was a space so i removed it  using trm only took me 1 hour to figure it out :)
         // Append the API key to the service URL
-        $Service = "?Service=Get_random&apikey=" . urlencode($_SESSION["apikey"]);
-
+        $Service = "?Service=Get_random&apikey=$api";
         // Set up cURL to call the server
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $basicUrl . $Service);

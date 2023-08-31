@@ -63,6 +63,7 @@ function getMembeType($username){
   
     return $member["memberType"];
 }
+
 function check_user($username, $password) {
     global $db;
     $query = "SELECT * FROM user WHERE username = :username AND " . "password = :password";
@@ -107,6 +108,23 @@ function request_token($username, $password,$member) {
     $_SESSION['userId'] = $user['userId'];
     $_SESSION['userType'] = $user['userType'];
     return TRUE;
+}
+
+function upgradeToPremium($username) {
+    global $db; 
+
+    try {
+        $query = "UPDATE user SET memberType = 1 WHERE username = :username";
+        $statement = $db->prepare($query);
+        $statement->bindValue(":username", $username);
+        $statement->execute();
+        $rowCount = $statement->rowCount();
+
+        return $rowCount > 0; // Return true if the update was successful
+    } catch (PDOException $ex) {
+        // Handle the error gracefully, log, or display an appropriate message
+        header("Location:../view/error.php?msg=" . $ex->getMessage());
+    }
 }
 
 ?>

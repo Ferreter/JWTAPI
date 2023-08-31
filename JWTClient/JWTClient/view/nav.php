@@ -12,29 +12,29 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav ml-auto ">
+            
+            <?php if (isset($_SESSION["login"]) && $_SESSION["login"]): ?>
             <li class="nav-item">
                 <a class="nav-link" href="?action=fetch_random_cocktail">Random Cocktail</a>
             </li>
             <li class="nav-item">
-                <?php if ($_SESSION['member'] == 0) : ?>
+                <?php if (isset($_SESSION['member']) &&$_SESSION['member'] == 0) : ?>
                     <a class="nav-link font-weight-bold disabled" href="#" tabindex="-1" aria-disabled="true">Cocktail by Name</a>
                 <?php else : ?>
                     <a class="nav-link font-weight-bold" href="?action=fetch_cocktail_by_name">Cocktail by Name</a>
                 <?php endif; ?>
             </li>
             <li class="nav-item">
-                <?php if ($_SESSION['member'] == 0) : ?>
+                <?php if (isset($_SESSION['member']) && $_SESSION['member'] == 0) : ?>
                     <a class="nav-link font-weight-bold disabled" href="#" tabindex="-1" aria-disabled="true">Cocktail by Ingredient</a>
                 <?php else : ?>
                     <a class="nav-link font-weight-bold" href="?action=fetch_cocktail_by_category_and_ingredient">Cocktail by Ingredient</a>
                 <?php endif; ?>
             </li>
-
-
             <!-- Check if the user is logged in -->
-            <?php if (isset($_SESSION["login"]) && $_SESSION["login"]): ?>
+            
                 <li class="nav-item">
-                    <a class="nav-link" href="#"><?php echo "Hi, ", $_SESSION["username"]; ?></a>
+                    <a class="nav-link" href="?action=updateProfile"><?php echo "Hi, ", $_SESSION["username"]; ?></a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="?action=logout">Logout</a>
