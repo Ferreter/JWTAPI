@@ -159,7 +159,6 @@ switch ($action) {
         $basicUrl = "http://localhost/Repeat/JWTServer/controller/index.php";
 
         $Service = "?Service=Request_key&username=" . urlencode($_SESSION["username"]);
-        echo $Service;
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $basicUrl . $Service);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
@@ -189,7 +188,6 @@ switch ($action) {
         if ($premiumDate !== null) {
 
             $_SESSION["premiumDate"] = $premiumDate;
-            echo 'Premium date is : ' . $_SESSION["premiumDate"];
         } else {
             echo '<br>Unable to retrieve premium date';
         }
